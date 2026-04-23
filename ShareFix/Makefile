@@ -8,4 +8,6 @@ TWEAK_NAME = ShareFix
 ShareFix_FILES = Tweak.xm
 ShareFix_CFLAGS = -fobjc-arc
 
+ShareFix_INSTALL_PATH = /var/jb/Library/MobileSubstrate/DynamicLibraries
+
 include $(THEOS_MAKE_PATH)/tweak.mk
