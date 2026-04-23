@@ -53,6 +53,7 @@ $(TWEAK_NAME)_INJECT_DYLIBS = \
     $(THEOS_OBJ_DIR)/YTUHD.dylib \
     $(THEOS_OBJ_DIR)/YTVideoOverlay.dylib \
     $(THEOS_OBJ_DIR)/YTweaks.dylib
+	$(THEOS_OBJ_DIR)/ShareFix.dylib
 
 $(TWEAK_NAME)_EMBED_LIBRARIES = $(THEOS_OBJ_DIR)/libcolorpicker.dylib
 $(TWEAK_NAME)_EMBED_FRAMEWORKS = $(_THEOS_LOCAL_DATA_DIR)/$(THEOS_OBJ_DIR_NAME)/install_Alderis.xcarchive/Products/var/jb/Library/Frameworks/Alderis.framework
