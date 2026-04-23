@@ -141,13 +141,42 @@ jobs:
         id: build_package
         run: |
           cd ${{ github.workspace }}/main
-          sed -i '' "30s#.*#BUNDLE_ID = ${{ env.BUNDLE_ID }}#g" Makefile                          # Modify the bundle ID
-          sed -i '' "29s#.*#DISPLAY_NAME = ${{ env.APP_NAME }}#g" Makefile                        # Modify the app name
-          sed -i '' "1s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:14.0#g" Makefile # Modify the SDK version
-          make package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
+          
+          # 1. Định nghĩa các biến cần thiết
+          APP_PATH="Payload/YouTube.app"
+          
+          # 2. Xóa triệt để các App Extensions và Watch App (Nguồn gốc gây lỗi IXErrorDomain)
+          echo "==> Đang xóa bỏ các thành phần mở rộng..."
+          rm -rf $APP_PATH/PlugIns/*
+          rm -rf $APP_PATH/Watch
+          # Tìm và xóa bất kỳ file nào có đuôi .appex còn sót lại
+          find $APP_PATH -name "*.appex" -type d -exec rm -rf {} +
+          
+          # 3. Chỉnh sửa Makefile
+          echo "==> Đang cấu hình Makefile..."
+          sed -i '' "s/^BUNDLE_ID =.*/BUNDLE_ID = ${{ env.BUNDLE_ID }}/g" Makefile
+          sed -i '' "s/^DISPLAY_NAME =.*/DISPLAY_NAME = ${{ env.APP_NAME }}/g" Makefile
+          sed -i '' "1s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:14.0#g" Makefile
+
+          # 4. Sử dụng PlistBuddy để dọn dẹp Info.plist của App chính
+          # Bước này cực kỳ quan trọng để iOS không tìm các Extension đã xóa
+          echo "==> Đang dọn dẹp Info.plist..."
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName" "$APP_PATH/Info.plist" || true
+          /usr/libexec/PlistBuddy -c "Delete :NSExtension" "$APP_PATH/Info.plist" || true
+          /usr/libexec/PlistBuddy -c "Delete :UISupportedInterfaceOrientations~ipad" "$APP_PATH/Info.plist" || true
+
+          # 5. Đồng bộ Bundle ID cho toàn bộ các file Plist còn lại (theo cách của YTLite)
+          # Thêm LC_ALL=C để xử lý các ký tự đặc biệt
+          echo "==> Đồng bộ hóa Bundle ID mới..."
+          find $APP_PATH -name "Info.plist" -exec sh -c 'LC_ALL=C sed -i "" "s/com.google.ios.youtube/${{ env.BUNDLE_ID }}/g" "$1"' _ {} +
+
+          # 6. Tiến hành Build Package
+          echo "==> Đang tiến hành đóng gói IPA..."
+          make package THEOS_PACKAGE_SCHEME=rootless IPA=$APP_PATH FINALPACKAGE=1
+          
+          # 7. Xuất kết quả
           echo "package=$(ls -t packages | head -n1)" >>$GITHUB_OUTPUT
           echo -e "==> \033[1mSHASUM256: $(shasum -a 256 packages/*.ipa | cut -f1 -d' ')\033[0m"
-          echo -e "==> \033[1mBundle ID: ${{ env.BUNDLE_ID }}\033[0m"
 
         env:
           THEOS: ${{ github.workspace }}/theos
