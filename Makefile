@@ -62,7 +62,7 @@ $(TWEAK_NAME)_EMBED_EXTENSIONS = $(wildcard Extensions/*.appex)
 
 include $(THEOS)/makefiles/common.mk
 ifneq ($(JAILBROKEN),1)
-SUBPROJECTS += Tweaks/Alderis Tweaks/DontEatMyContent Tweaks/FLEXing/libflex Tweaks/Return-YouTube-Dislikes Tweaks/YTHoldForSpeed Tweaks/YTweaks ShareFix
+SUBPROJECTS += Tweaks/Alderis Tweaks/DontEatMyContent Tweaks/FLEXing/libflex Tweaks/iSponsorBlock Tweaks/Return-YouTube-Dislikes Tweaks/YTABConfig Tweaks/YouGroupSettings Tweaks/YTIcons Tweaks/YouLoop Tweaks/YouMute Tweaks/YouPiP Tweaks/YouQuality Tweaks/YouSlider Tweaks/YouSpeed Tweaks/YouTimeStamp Tweaks/YTHoldForSpeed Tweaks/YTUHD Tweaks/YTVideoOverlay Tweaks/YTweaks ShareFix
 include $(THEOS_MAKE_PATH)/aggregate.mk
 endif
 include $(THEOS_MAKE_PATH)/tweak.mk
@@ -96,19 +96,5 @@ before-all::
 	fi;
 else
 before-package::
-	@echo "==> Embedding ALL dylibs..."
-
-	@FRAMEWORKS="$(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks"; \
-	mkdir -p $$FRAMEWORKS; \
-
-	echo "==> Copying Theos dylibs..."; \
-	find $(THEOS_OBJ_DIR) -name "*.dylib" -exec cp {} $$FRAMEWORKS \; 2>/dev/null || true; \
-
-	echo "==> Copying uYou dylib..."; \
-	cp Tweaks/uYou/Library/MobileSubstrate/DynamicLibraries/*.dylib $$FRAMEWORKS 2>/dev/null || true; \
-
-	echo "==> Listing embedded dylibs:"; \
-	ls -la $$FRAMEWORKS; \
-
-	echo "==> Done"
+	@mkdir -p $(THEOS_STAGING_DIR)/Library/Application\ Support; cp -r Localizations/uYouPlus.bundle $(THEOS_STAGING_DIR)/Library/Application\ Support/
 endif
