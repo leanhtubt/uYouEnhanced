@@ -96,17 +96,19 @@ before-all::
 	fi;
 else
 before-package::
-	@mkdir -p $(THEOS_STAGING_DIR)/Library/Application\ Support
-	@cp -r Localizations/uYouPlus.bundle $(THEOS_STAGING_DIR)/Library/Application\ Support/
+	@echo "==> Embedding ALL dylibs..."
 
-	@echo "==> Embedding all dylibs into Frameworks..."
-	@mkdir -p $(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks/
+	@FRAMEWORKS="$(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks"; \
+	mkdir -p $$FRAMEWORKS; \
 
-	# Copy dylib từ Theos build
-	@cp $(THEOS_OBJ_DIR)/*.dylib $(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks/ 2>/dev/null || true
+	echo "==> Copying Theos dylibs..."; \
+	find $(THEOS_OBJ_DIR) -name "*.dylib" -exec cp {} $$FRAMEWORKS \; 2>/dev/null || true; \
 
-	# Copy dylib của uYou
-	@cp Tweaks/uYou/Library/MobileSubstrate/DynamicLibraries/*.dylib $(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks/ 2>/dev/null || true
+	echo "==> Copying uYou dylib..."; \
+	cp Tweaks/uYou/Library/MobileSubstrate/DynamicLibraries/*.dylib $$FRAMEWORKS 2>/dev/null || true; \
 
-	@echo "==> Done embedding dylibs"
+	echo "==> Listing embedded dylibs:"; \
+	ls -la $$FRAMEWORKS; \
+
+	echo "==> Done"
 endif
