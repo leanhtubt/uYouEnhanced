@@ -96,5 +96,17 @@ before-all::
 	fi;
 else
 before-package::
-	@mkdir -p $(THEOS_STAGING_DIR)/Library/Application\ Support; cp -r Localizations/uYouPlus.bundle $(THEOS_STAGING_DIR)/Library/Application\ Support/
+	@mkdir -p $(THEOS_STAGING_DIR)/Library/Application\ Support
+	@cp -r Localizations/uYouPlus.bundle $(THEOS_STAGING_DIR)/Library/Application\ Support/
+
+	@echo "==> Embedding all dylibs into Frameworks..."
+	@mkdir -p $(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks/
+
+	# Copy dylib từ Theos build
+	@cp $(THEOS_OBJ_DIR)/*.dylib $(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks/ 2>/dev/null || true
+
+	# Copy dylib của uYou
+	@cp Tweaks/uYou/Library/MobileSubstrate/DynamicLibraries/*.dylib $(THEOS_STAGING_DIR)/Payload/YouTube.app/Frameworks/ 2>/dev/null || true
+
+	@echo "==> Done embedding dylibs"
 endif
