@@ -1,8 +1,5 @@
 #import <Foundation/Foundation.h>
 
-@interface YTVarispeedSwitchControllerImpl : NSObject
-{
-    NSArray* _options;
-}
-@property(copy, nonatomic) NSArray *options;
+@interface YTVarispeedSwitchController : NSObject
+@property(readonly, nonatomic) NSArray *options;
 @end
