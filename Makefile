@@ -13,30 +13,18 @@ export libcolorpicker_LDFLAGS = -F$(TARGET_PRIVATE_FRAMEWORK_PATH) -install_name
 export ADDITIONAL_CFLAGS = -I$(THEOS_PROJECT_DIR)/Tweaks -I$(THEOS_PROJECT_DIR)/Tweaks/RemoteLog -I$(THEOS_PROJECT_DIR)/Tweaks/FixHeaders
 export ADDITIONAL_OBJCCFLAGS = -include $(THEOS_PROJECT_DIR)/Tweaks/FixHeaders/FixForward.h
 
-export ADDITIONAL_OBJCCFLAGS = \
--include $(THEOS_PROJECT_DIR)/Tweaks/FixHeaders/FixForward.h
-# --------------------------------------------------------
-
-
 ifneq ($(JAILBROKEN),1)
-export DEBUGFLAG = \
--ggdb \
--Wno-unused-command-line-argument \
--L$(THEOS_OBJ_DIR) \
--F$(_THEOS_LOCAL_DATA_DIR)/$(THEOS_OBJ_DIR_NAME)/install/Library/Frameworks
-
+export DEBUGFLAG = -ggdb -Wno-unused-command-line-argument -L$(THEOS_OBJ_DIR) -F$(_THEOS_LOCAL_DATA_DIR)/$(THEOS_OBJ_DIR_NAME)/install/Library/Frameworks
 MODULES = jailed
 endif
 
-
 ifndef YOUTUBE_VERSION
-YOUTUBE_VERSION = 20.44.2
+YOUTUBE_VERSION := 21.17.3
 endif
 
 ifndef UYOU_VERSION
-UYOU_VERSION = 3.0.4
+UYOU_VERSION := 3.0.4
 endif
-
 
 TWEAK_NAME = uYouEnhanced
 PACKAGE_NAME = $(TWEAK_NAME)
@@ -46,131 +34,47 @@ DISPLAY_NAME = YouTube
 BUNDLE_ID = com.google.ios.youtube
 INSTALL_TARGET_PROCESSES = YouTube
 
-
-$(TWEAK_NAME)_FILES := \
-$(wildcard Sources/*.xm) \
-$(wildcard Sources/*.x) \
-$(wildcard Sources/*.m)
-
-$(TWEAK_NAME)_FRAMEWORKS = \
-UIKit Foundation AVFoundation AVKit Photos \
-Accelerate CoreMotion GameController \
-VideoToolbox Security
-
+$(TWEAK_NAME)_FILES := $(wildcard Sources/*.xm) $(wildcard Sources/*.x) $(wildcard Sources/*.m)
+$(TWEAK_NAME)_FRAMEWORKS = UIKit Foundation AVFoundation AVKit Photos Accelerate CoreMotion GameController VideoToolbox Security
 $(TWEAK_NAME)_LIBRARIES = bz2 c++ iconv z
 
-$(TWEAK_NAME)_CFLAGS = \
--fobjc-arc \
--Wno-deprecated-declarations \
--Wno-unused-but-set-variable \
--DTWEAK_VERSION=\"$(PACKAGE_VERSION)\"
+# Sửa lỗi chí mạng: Dùng dấu nháy đơn bảo vệ chuỗi phiên bản cho Clang
+$(TWEAK_NAME)_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-but-set-variable -DTWEAK_VERSION='@"$(PACKAGE_VERSION)"'
 
+# Dồn dòng để tránh lỗi khoảng trắng (space) sau dấu gạch chéo (\)
+$(TWEAK_NAME)_INJECT_DYLIBS = Tweaks/uYou/Library/MobileSubstrate/DynamicLibraries/uYou.dylib $(THEOS_OBJ_DIR)/libFLEX.dylib $(THEOS_OBJ_DIR)/iSponsorBlock.dylib $(THEOS_OBJ_DIR)/YTABConfig.dylib $(THEOS_OBJ_DIR)/YTIcons.dylib $(THEOS_OBJ_DIR)/YouGroupSettings.dylib $(THEOS_OBJ_DIR)/YouLoop.dylib $(THEOS_OBJ_DIR)/YouMute.dylib $(THEOS_OBJ_DIR)/YouPiP.dylib $(THEOS_OBJ_DIR)/YouQuality.dylib $(THEOS_OBJ_DIR)/YouSlider.dylib $(THEOS_OBJ_DIR)/YouSpeed.dylib $(THEOS_OBJ_DIR)/YouTimeStamp.dylib $(THEOS_OBJ_DIR)/YouTubeDislikesReturn.dylib $(THEOS_OBJ_DIR)/DontEatMyContent.dylib $(THEOS_OBJ_DIR)/YTHoldForSpeed.dylib $(THEOS_OBJ_DIR)/YTUHD.dylib $(THEOS_OBJ_DIR)/YTVideoOverlay.dylib $(THEOS_OBJ_DIR)/YTweaks.dylib $(THEOS_OBJ_DIR)/ShareFix.dylib
 
-$(TWEAK_NAME)_INJECT_DYLIBS = \
-Tweaks/uYou/Library/MobileSubstrate/DynamicLibraries/uYou.dylib \
-$(THEOS_OBJ_DIR)/libFLEX.dylib \
-$(THEOS_OBJ_DIR)/iSponsorBlock.dylib \
-$(THEOS_OBJ_DIR)/YTABConfig.dylib \
-$(THEOS_OBJ_DIR)/YTIcons.dylib \
-$(THEOS_OBJ_DIR)/YouGroupSettings.dylib \
-$(THEOS_OBJ_DIR)/YouLoop.dylib \
-$(THEOS_OBJ_DIR)/YouMute.dylib \
-$(THEOS_OBJ_DIR)/YouPiP.dylib \
-$(THEOS_OBJ_DIR)/YouQuality.dylib \
-$(THEOS_OBJ_DIR)/YouSlider.dylib \
-$(THEOS_OBJ_DIR)/YouSpeed.dylib \
-$(THEOS_OBJ_DIR)/YouTimeStamp.dylib \
-$(THEOS_OBJ_DIR)/YouTubeDislikesReturn.dylib \
-$(THEOS_OBJ_DIR)/DontEatMyContent.dylib \
-$(THEOS_OBJ_DIR)/YTHoldForSpeed.dylib \
-$(THEOS_OBJ_DIR)/YTUHD.dylib \
-$(THEOS_OBJ_DIR)/YTVideoOverlay.dylib \
-$(THEOS_OBJ_DIR)/YTweaks.dylib \
-$(THEOS_OBJ_DIR)/ShareFix.dylib
-
-
-$(TWEAK_NAME)_EMBED_LIBRARIES = \
-$(THEOS_OBJ_DIR)/libcolorpicker.dylib
-
-$(TWEAK_NAME)_EMBED_FRAMEWORKS = \
-$(_THEOS_LOCAL_DATA_DIR)/$(THEOS_OBJ_DIR_NAME)/install_Alderis.xcarchive/Products/var/jb/Library/Frameworks/Alderis.framework
-
+$(TWEAK_NAME)_EMBED_LIBRARIES = $(THEOS_OBJ_DIR)/libcolorpicker.dylib
+$(TWEAK_NAME)_EMBED_FRAMEWORKS = $(_THEOS_LOCAL_DATA_DIR)/$(THEOS_OBJ_DIR_NAME)/install_Alderis.xcarchive/Products/var/jb/Library/Frameworks/Alderis.framework
 $(TWEAK_NAME)_EMBED_BUNDLES = $(wildcard Bundles/*.bundle)
 $(TWEAK_NAME)_EMBED_EXTENSIONS = $(wildcard Extensions/*.appex)
 
-
-
 include $(THEOS)/makefiles/common.mk
 
-
 ifneq ($(JAILBROKEN),1)
-
-SUBPROJECTS += \
-Tweaks/Alderis \
-Tweaks/DontEatMyContent \
-Tweaks/FLEXing/libflex \
-Tweaks/iSponsorBlock \
-Tweaks/Return-YouTube-Dislikes \
-Tweaks/YTABConfig \
-Tweaks/YouGroupSettings \
-Tweaks/YTIcons \
-Tweaks/YouLoop \
-Tweaks/YouMute \
-Tweaks/YouPiP \
-Tweaks/YouQuality \
-Tweaks/YouSlider \
-Tweaks/YouSpeed \
-Tweaks/YouTimeStamp \
-Tweaks/YTHoldForSpeed \
-Tweaks/YTUHD \
-Tweaks/YTVideoOverlay \
-Tweaks/YTweaks \
-Tweaks/ShareFix
-
+SUBPROJECTS += Tweaks/Alderis Tweaks/DontEatMyContent Tweaks/FLEXing/libflex Tweaks/iSponsorBlock Tweaks/Return-YouTube-Dislikes Tweaks/YTABConfig Tweaks/YouGroupSettings Tweaks/YTIcons Tweaks/YouLoop Tweaks/YouMute Tweaks/YouPiP Tweaks/YouQuality Tweaks/YouSlider Tweaks/YouSpeed Tweaks/YouTimeStamp Tweaks/YTHoldForSpeed Tweaks/YTUHD Tweaks/YTVideoOverlay Tweaks/YTweaks Tweaks/ShareFix
 include $(THEOS_MAKE_PATH)/aggregate.mk
-
 endif
-
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-
 REMOVE_EXTENSIONS = 1
 CODESIGN_IPA = 0
-
 
 UYOU_PATH = Tweaks/uYou
 UYOU_DEB = $(UYOU_PATH)/com.miro.uyou_$(UYOU_VERSION)_iphoneos-arm.deb
 UYOU_DYLIB = $(UYOU_PATH)/Library/MobileSubstrate/DynamicLibraries/uYou.dylib
 UYOU_BUNDLE = $(UYOU_PATH)/Library/Application\ Support/uYouBundle.bundle
 
-
 internal-clean::
-	@rm -rf $(UYOU_PATH)/*
-
+	rm -rf $(UYOU_PATH)/*
 
 ifneq ($(JAILBROKEN),1)
-
 before-all::
-	@if [[ ! -f $(UYOU_DEB) ]]; then \
-		rm -rf $(UYOU_PATH)/*; \
-		echo "Downloading uYou..."; \
-		curl -L "https://www.dropbox.com/scl/fi/01vvu5lm8nkkicrznku9v/com.miro.uyou_$(UYOU_VERSION)_iphoneos-arm.deb?rlkey=efgz7po8kqqvha8doplk1s3ky&dl=1" -o $(UYOU_DEB); \
-	fi; \
-	if [[ ! -f $(UYOU_DYLIB) || ! -d $(UYOU_BUNDLE) ]]; then \
-		tar -xf $(UYOU_DEB) -C $(UYOU_PATH); \
-		tar -xf $(UYOU_PATH)/data.tar* -C $(UYOU_PATH); \
-		if [[ ! -f $(UYOU_DYLIB) || ! -d $(UYOU_BUNDLE) ]]; then \
-			echo "Failed to extract uYou"; \
-			exit 1; \
-		fi; \
-	fi
-
+	@if [ ! -f $(UYOU_DEB) ]; then rm -rf $(UYOU_PATH)/*; curl -L "https://www.dropbox.com/scl/fi/01vvu5lm8nkkicrznku9v/com.miro.uyou_$(UYOU_VERSION)_iphoneos-arm.deb?rlkey=efgz7po8kqqvha8doplk1s3ky&dl=1" -o $(UYOU_DEB); fi
+	@if [ ! -f $(UYOU_DYLIB) ] || [ ! -d $(UYOU_BUNDLE) ]; then tar -xf $(UYOU_DEB) -C $(UYOU_PATH); tar -xf $(UYOU_PATH)/data.tar* -C $(UYOU_PATH); fi
 else
-
 before-package::
-	@mkdir -p "$(THEOS_STAGING_DIR)/Library/Application Support"
-	@cp -r Localizations/uYouPlus.bundle \
-	"$(THEOS_STAGING_DIR)/Library/Application Support/"
-
+	mkdir -p "$(THEOS_STAGING_DIR)/Library/Application Support"
+	cp -r Localizations/uYouPlus.bundle "$(THEOS_STAGING_DIR)/Library/Application Support/"
 endif
