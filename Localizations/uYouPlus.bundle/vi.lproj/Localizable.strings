@@ -111,8 +111,8 @@
 // Miscellaneous
 "MISCELLANEOUS" = "🔎 Cài đặt khác";
 
-"HIDE_UYOU" = "Hide uYou tab";
-"HIDE_ISPONSORBLOCK" = "Hide iSponsorBlock button";
+"HIDE_UYOU" = "Ẩn tab uYou";
+"HIDE_ISPONSORBLOCK" = "Ẩn nút iSponsorBlock";
 
 "CAST_CONFIRM" = "Xác nhận trước khi cast video (YTCastConfirm)";
 "CAST_CONFIRM_DESC" = "Hiện hộp thoại xác nhận trước khi cast video sang TV để tránh vô tình chiếm quyền điều khiển TV.";
